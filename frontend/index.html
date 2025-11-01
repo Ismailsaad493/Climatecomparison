@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AgriClimate QnA - Compare States</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f8fb;
+            color: #333;
+            padding: 20px;
+            max-width: 700px;
+            margin: auto;
+        }
+        h1 {
+            color: #007b5e;
+            text-align: center;
+        }
+        select, button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background: #007b5e;
+            color: white;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9f7ef;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>AgriClimate QnA - Compare States</h1>
+
+    <label>Select State 1:</label>
+    <select id="state1">
+        <option value="">-- Select --</option>
+        <option>Tamil Nadu</option>
+        <option>Kerala</option>
+        <option>Karnataka</option>
+    </select>
+
+    <label>Select State 2:</label>
+    <select id="state2">
+        <option value="">-- Select --</option>
+        <option>Tamil Nadu</option>
+        <option>Kerala</option>
+        <option>Karnataka</option>
+    </select>
+
+    <button onclick="compareStates()">Compare</button>
+
+    <div id="result" class="result"></div>
+
+    <script>
+        async function compareStates() {
+            const state1 = document.getElementById("state1").value;
+            const state2 = document.getElementById("state2").value;
+
+            if (!state1 || !state2) {
+                alert("Please select both states");
+                return;
+            }
+
+            const response = await fetch("http://127.0.0.1:5000/compare", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ state1, state2 }),
+            });
+
+            const data = await response.json();
+            if (data.error) {
+                document.getElementById("result").innerHTML = `<p>${data.error}</p>`;
+            } else {
+                document.getElementById("result").innerHTML = `
+                    <h3>Comparison Result:</h3>
+                    <p><strong>${data.state1.name}</strong> - Avg Rainfall: ${data.state1.avg_rainfall} mm | Avg Production: ${data.state1.avg_production}</p>
+                    <p><strong>${data.state2.name}</strong> - Avg Rainfall: ${data.state2.avg_rainfall} mm | Avg Production: ${data.state2.avg_production}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
